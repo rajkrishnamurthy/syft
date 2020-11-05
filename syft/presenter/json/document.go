@@ -1,6 +1,7 @@
 package json
 
 import (
+	"github.com/anchore/syft/syft/distro"
 	"github.com/anchore/syft/syft/pkg"
 	"github.com/anchore/syft/syft/scope"
 )
@@ -10,12 +11,12 @@ type Document struct {
 	Source    Source     `json:"source"`
 }
 
-func NewDocument(catalog *pkg.Catalog, s scope.Scope) (Document, error) {
+func NewDocument(catalog *pkg.Catalog, s scope.Scope, d distro.Distro) (Document, error) {
 	doc := Document{
 		Artifacts: make([]Artifact, 0),
 	}
 
-	src, err := NewSource(s)
+	src, err := NewSource(s, d)
 	if err != nil {
 		return Document{}, nil
 	}

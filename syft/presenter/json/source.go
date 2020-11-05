@@ -3,6 +3,7 @@ package json
 import (
 	"fmt"
 
+	"github.com/anchore/syft/syft/distro"
 	"github.com/anchore/syft/syft/scope"
 )
 
@@ -11,12 +12,12 @@ type Source struct {
 	Target interface{} `json:"target"`
 }
 
-func NewSource(s scope.Scope) (Source, error) {
+func NewSource(s scope.Scope, d distro.Distro) (Source, error) {
 	switch src := s.Source.(type) {
 	case scope.ImageSource:
 		return Source{
 			Type:   "image",
-			Target: NewImage(src),
+			Target: NewImage(src, d),
 		}, nil
 	case scope.DirSource:
 		return Source{
