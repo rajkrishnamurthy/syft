@@ -1,6 +1,9 @@
 package json
 
-import "github.com/anchore/syft/syft/scope"
+import (
+	"github.com/anchore/syft/syft/distro"
+	"github.com/anchore/syft/syft/scope"
+)
 
 type Image struct {
 	Layers    []Layer  `json:"layers"`
@@ -8,6 +11,7 @@ type Image struct {
 	Digest    string   `json:"digest"`
 	MediaType string   `json:"mediaType"`
 	Tags      []string `json:"tags"`
+	Distro    Distro   `json:"distro"`
 }
 
 type Layer struct {
@@ -16,14 +20,23 @@ type Layer struct {
 	Size      int64  `json:"size"`
 }
 
-func NewImage(src scope.ImageSource) *Image {
+type Distro struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
+func NewImage(src scope.ImageSource, d distro.Distro) *Image {
 	// populate artifacts...
 	tags := make([]string, len(src.Img.Metadata.Tags))
 	for idx, tag := range src.Img.Metadata.Tags {
 		tags[idx] = tag.String()
 	}
 	img := Image{
-		Digest:    src.Img.Metadata.Digest,
+		Digest: src.Img.Metadata.Digest,
+		Distro: Distro{
+			Name:    d.Name(),
+			Version: d.FullVersion(),
+		},
 		Size:      src.Img.Metadata.Size,
 		MediaType: string(src.Img.Metadata.MediaType),
 		Tags:      tags,
